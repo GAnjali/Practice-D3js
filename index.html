@@ -45,6 +45,21 @@
                     .call(d3.axisLeft(yScale).tickFormat(function (d) {
                         return "$" + d;
                     }).ticks(10));
+
+                g.selectAll(".bar")
+                    .data(data)
+                    .enter().append("rect")
+                    .attr("class", "bar")
+                    .attr("x", function (d) {
+                        return xScale(d.year);
+                    })
+                    .attr("y", function (d) {
+                        return yScale(d.value);
+                    })
+                    .attr("width", xScale.bandwidth())
+                    .attr("height", function (d) {
+                        return height - yScale(d.value);
+                    });
             });
 		</script>
 	</body>
