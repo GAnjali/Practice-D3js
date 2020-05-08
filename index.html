@@ -36,7 +36,19 @@
                     .attr("r", 5)
                     .attr("cx", d => xScale(d.day))
                     .attr("cy", d => yScale(d.median))
-                    .style("fill", "darkgray")
+                    .style("fill", "darkgray");
+                d3.select("svg").selectAll("g.box")
+                    .data(data).enter()
+                    .append("g")
+                    .attr("class", "box")
+                    .attr("transform", d =>
+                        "translate(" + xScale(d.day) + "," + yScale(d.median) + ")"
+                    ).each(function (d, i) {
+                    d3.select(this)
+                        .append("rect")
+                        .attr("width", 20)
+                        .attr("height", yScale(d.q1) - yScale(d.q3));
+                })
             }
 		</script>
 	</body>
