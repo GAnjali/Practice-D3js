@@ -10,6 +10,14 @@
             const width = 900, height = 500, margin = 50;
             const dateFormat = d3.timeParse("%d/%m/%Y");
 
+            function getMin(a, b) {
+                return a < b ? a : b;
+            }
+
+            function getMax(a, b) {
+                return a > b ? a : b;
+            }
+
             function scatterplot(data) {
                 console.log(data);
                 const min = d3.min(data.map(function (x) {
@@ -86,6 +94,25 @@
                     .attr("dx", 20)
                     .attr("text-anchor", "middle")
                     .text(String);
+
+                chart.selectAll("rect")
+                    .data(data)
+                    .enter().append("svg:rect")
+                    .attr("x", function (d) {
+                        return x(getTime(dateFormat(d.date)));
+                    })
+                    .attr("y", function (d) {
+                        return y(getMax(d.open, d.close));
+                    })
+                    .attr("height", function (d) {
+                        return y(getMin(d.open, d.close)) - y(getMax(d.open, d.close));
+                    })
+                    .attr("width", function (d) {
+                        return 0.5 * (width - 2 * margin) / data.length;
+                    })
+                    .attr("fill", function (d) {
+                        return d.open > d.close ? "red" : "green";
+                    });
             }
 		</script>
 	</body>
