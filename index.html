@@ -113,6 +113,28 @@
                     .attr("fill", function (d) {
                         return d.open > d.close ? "red" : "green";
                     });
+
+                chart.selectAll("line.stem")
+                    .data(data)
+                    .enter().append("svg:line")
+                    .attr("class", "stem")
+                    .attr("x1", function (d) {
+                        return x(getTime(dateFormat(d.date))) + 0.25 * (width - 2 * margin) /
+                            data.length;
+                    })
+                    .attr("x2", function (d) {
+                        return x(getTime(dateFormat(d.date))) + 0.25 * (width - 2 * margin) /
+                            data.length;
+                    })
+                    .attr("y1", function (d) {
+                        return y(d.high);
+                    })
+                    .attr("y2", function (d) {
+                        return y(d.low);
+                    })
+                    .attr("stroke", function (d) {
+                        return d.open > d.close ? "red" : "green";
+                    })
             }
 		</script>
 	</body>
