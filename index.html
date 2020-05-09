@@ -4,92 +4,60 @@
 		<script src="https://d3js.org/d3.v4.min.js"></script>
 	</head>
 	<body>
-		<svg width="1000" height="1000"></svg>
+		<div id="chart"></div>
 		<script>
             d3.csv("XYZ.csv", scatterplot);
-            const tickSize = 470;
+            const width = 900, height = 500, margin = 50;
+            const dateFormat = d3.timeParse("%d/%m/%Y");
 
             function scatterplot(data) {
-                const xScale = d3.scaleLinear().domain([1, 8]).range([20, tickSize]);
-                const yScale = d3.scaleLinear().domain([0, 100]).range([tickSize + 10, 20]);
-                const yAxis = d3.axisRight()
-                    .scale(yScale)
-                    .ticks(8)
-                    .tickSize(-tickSize);
-                d3.select("svg").append("g")
-                    .attr("transform", `translate(${tickSize},0)`)
-                    .attr("id", "yAxisG")
-                    .call(yAxis);
-                const xAxis = d3.axisBottom()
-                    .scale(xScale)
-                    .tickSize(-tickSize)
-                    .tickValues([1, 2, 3, 4, 5, 6, 7]);
-                d3.select("svg").append("g")
-                    .attr("transform", `translate(0,${tickSize + 10})`)
-                    .attr("id", "xAxisG")
-                    .call(xAxis);
-                d3.select("svg").selectAll("circle.median")
-                    .data(data)
-                    .enter()
-                    .append("circle")
-                    .attr("class", "tweets")
-                    .attr("r", 5)
-                    .attr("cx", d => xScale(d.day))
-                    .attr("cy", d => yScale(d.median))
-                    .style("fill", "darkgray");
-                d3.select("svg").selectAll("g.box")
-                    .data(data).enter()
-                    .append("g")
-                    .attr("class", "box")
-                    .attr("transform", d =>
-                        "translate(" + xScale(d.day) + "," + yScale(d.median) + ")"
-                    ).each(function (d, i) {
-                    d3.select(this)
-                        .append("line")
-                        .attr("class", "range")
-                        .attr("x1", 0)
-                        .attr("x2", 0)
-                        .attr("y1", yScale(d.max) - yScale(d.median))
-                        .attr("y2", yScale(d.min) - yScale(d.median))
-                        .style("stroke", "black")
-                        .style("stroke-width", "4px");
-                    d3.select(this)
-                        .append("line")
-                        .attr("class", "max")
-                        .attr("x1", -10)
-                        .attr("x2", 10)
-                        .attr("y1", yScale(d.max) - yScale(d.median))
-                        .attr("y2", yScale(d.max) - yScale(d.median))
-                        .style("stroke", "black")
-                        .style("stroke-width", "4px");
-                    d3.select(this)
-                        .append("line")
-                        .attr("class", "min")
-                        .attr("x1", -10)
-                        .attr("x2", 10)
-                        .attr("y1", yScale(d.min) - yScale(d.median))
-                        .attr("y2", yScale(d.min) - yScale(d.median))
-                        .style("stroke", "black")
-                        .style("stroke-width", "4px");
-                    d3.select(this)
-                        .append("rect")
-                        .attr("class", "range")
-                        .attr("width", 20)
-                        .attr("x", -10)
-                        .attr("y", yScale(d.q3) - yScale(d.median))
-                        .attr("height", yScale(d.q1) - yScale(d.q3))
-                        .style("fill", "white")
-                        .style("stroke", "black")
-                        .style("stroke-width", "2px");
-                    d3.select(this)
-                        .append("line")
-                        .attr("x1", -10)
-                        .attr("x2", 10)
-                        .attr("y1", 0)
-                        .attr("y2", 0)
-                        .style("stroke", "darkgray")
-                        .style("stroke-width", "4px")
-                });
+                console.log(data);
+                const min = d3.min(data.map(function (x) {
+                        return x["low"];
+                    })),
+                    max = d3.max(data.map(function (x) {
+                        return x["high"];
+                    }));
+
+                function getTime(date) {
+                    return date.getTime();
+                }
+
+                const minDate = d3.min(data.map(function (d) {
+                        return getTime(dateFormat(d.date))
+                    })),
+                    maxDate = d3.max(data.map(function (d) {
+                        return getTime(dateFormat(d.date))
+                    }));
+
+                const x = d3.scaleLinear().domain([minDate, maxDate]).range([margin, width - margin]);
+                const y = d3.scaleLinear().domain([min, max]).range([height - margin, margin]);
+
+                const chart = d3.select("#chart")
+                    .append("svg:svg")
+                    .attr("class", "chart")
+                    .attr("width", width)
+                    .attr("height", height);
+
+                chart.selectAll("line.x")
+                    .data(x.ticks(10))
+                    .enter().append("svg:line")
+                    .attr("class", "x")
+                    .attr("x1", x)
+                    .attr("x2", x)
+                    .attr("y1", margin)
+                    .attr("y2", height - margin)
+                    .attr("stroke", "#ccc");
+
+                chart.selectAll("line.y")
+                    .data(y.ticks(10))
+                    .enter().append("svg:line")
+                    .attr("class", "y")
+                    .attr("x1", margin)
+                    .attr("x2", width - margin)
+                    .attr("y1", y)
+                    .attr("y2", y)
+                    .attr("stroke", "#ccc");
             }
 		</script>
 	</body>
