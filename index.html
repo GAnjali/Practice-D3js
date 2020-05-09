@@ -58,6 +58,34 @@
                     .attr("y1", y)
                     .attr("y2", y)
                     .attr("stroke", "#ccc");
+
+                function getFormattedMonth(date) {
+                    return d3.timeFormat('%b')(date);
+                }
+
+                chart.selectAll("text.xrule")
+                    .data(x.ticks(10))
+                    .enter().append("svg:text")
+                    .attr("class", "xrule")
+                    .attr("x", x)
+                    .attr("y", height - margin)
+                    .attr("dy", 20)
+                    .attr("text-anchor", "middle")
+                    .text(function (d) {
+                        var date = new Date(d * 1000);
+                        return getFormattedMonth((date));
+                    });
+
+                chart.selectAll("text.yrule")
+                    .data(y.ticks(10))
+                    .enter().append("svg:text")
+                    .attr("class", "yrule")
+                    .attr("x", width - margin)
+                    .attr("y", y)
+                    .attr("dy", 0)
+                    .attr("dx", 20)
+                    .attr("text-anchor", "middle")
+                    .text(String);
             }
 		</script>
 	</body>
